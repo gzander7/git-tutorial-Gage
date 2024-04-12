@@ -18,7 +18,7 @@ pipeline {
 
             steps {
 
-                git clone 'https://github.com/gzander7/git-tutorial-Gage.git'
+                sh 'git "https://github.com/gzander7/git-tutorial-Gage.git"'
 
             }
 
