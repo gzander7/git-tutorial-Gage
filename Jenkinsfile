@@ -1,77 +1,72 @@
 pipeline {
+	agent any
+	environment {
+		VERSION = '1.0.2'
+		DOCKERHUB_CREDENTIALS = credentials('docker-gageross-credentials')
+	}
+	stages {
+		stage('Build') {
+			steps {
+				sh 'echo "building the FlaskDemo v.${VERSION} from Git repo"'
+			}
+        	}
 
-    agent any
+        	stage('Test') {
+            		steps {
+				sh """
+					export PATH=/usr/local/bin:$PATH
+					python3 -m venv venv
+					source venv/bin/activate
+					python -m pip install --upgrade pip
+					pip install --upgrade pip
+					pip install -r requirements.txt
+					python -m pytest
+				"""	
+            		}
+        	}
 
-        environment {
-
-                VERSION = '1.0.0'
-
-                DOCKERHUB_CREDENTIALS = credentials('docker-gageross-credentials')
-
-        }
-
-
-
-    stages {
-
-        stage('Checkout') {
-
-            steps {
-
-                //sh 'git clone "https://github.com/gzander7/git-tutorial-Gage.git"'
-                sh 'echo "pulled https://github.com/gzander7/git-tutorial-Gage.git"'
-            }
-
-        }
-
-
-
-        stage('Test') {
-
-            steps {
-
-                //sh 'docker build -t csc324flaskapp .'
-
-                sh 'echo "Testing csc324flaskapp"'
-
-            }
-
-        }
-
-
-
-        stage('Build Docker Image') {
-
-            steps {
-                //sh 'echo "Number#13" | sudo -S chmod 666 /var/run/docker.sock'
-                sh 'docker build -t gzander7/csc324flaskapp:$VERSION .'
-                sh 'docker build -t gzander7/csc324flaskapp:latest .'
-
-            }
-        }
-
-        stage('Dockerhub login') {
-
-                steps {
-
-                        sh 'echo $DOCKERHIB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-
+		stage('Build Docker Image')
+                {
+                        steps {
+				sh 'sudo chmod 666 /var/run/docker.sock'
+                                sh 'docker build -t gzander7/csc324flaskapp:$VERSION .'
+                                sh 'docker build -t gzander7/csc324flaskapp:latest .'
                         }
-
                 }
 
-        stage('Push Docker Image') {
+		stage('Dockerhub Login') {
 
-            steps {
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
 
-                    sh 'docker push gzander7/csc324flaskapp:$VERSION'
+		stage('Push Image to Dockerhub') {
 
-                    sh 'docker push gzander7/csc324flaskapp:latest'
+			steps {
+				sh 'docker push gzander7/csc324flaskapp:$VERSION'
+				sh 'docker push gzander7/csc324flaskapp:latest'
+			}
+		}
 
-                }
-
-            }
-
-        }
-
-    }
+        	stage('Deploy')
+        	{
+           		steps {
+				echo "deploying the application"
+            		}
+        	}
+    	}
+    	post {
+        	always {
+			echo 'The pipeline completed'
+        	}
+        	success {
+			echo "FlaskDemo Application Docker Image v.${VERSION} Built and Pushed to DockerHub Up!!"
+			sh 'docker logout'
+        	}
+        	failure {
+			echo 'Build stage failed'
+			error('Stopping early…')
+        	}
+   	}
+}
