@@ -30,7 +30,7 @@ pipeline {
 
             steps {
 
-                sh 'docker build -t csc324flaskapp .'
+                //sh 'docker build -t csc324flaskapp .'
 
                 sh 'echo "Testing csc324flaskapp"'
 
