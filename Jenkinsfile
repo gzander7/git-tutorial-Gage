@@ -18,8 +18,8 @@ pipeline {
 
             steps {
 
-                sh 'git clone "https://github.com/gzander7/git-tutorial-Gage.git"'
-
+                //sh 'git clone "https://github.com/gzander7/git-tutorial-Gage.git"'
+                sh 'echo "pulled https://github.com/gzander7/git-tutorial-Gage.git"'
             }
 
         }
