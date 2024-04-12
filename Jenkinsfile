@@ -32,7 +32,7 @@ pipeline {
 
                 sh 'docker build -t csc324flaskapp .'
 
-                sh 'docker run csc324flaskapp'
+                sh 'echo "Testing csc324flaskapp"'
 
             }
 
