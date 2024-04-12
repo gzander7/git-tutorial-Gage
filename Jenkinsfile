@@ -43,7 +43,7 @@ pipeline {
         stage('Build Docker Image') {
 
             steps {
-                sh 'sudo chmod 666 /var/run/docker.sock'
+                sh 'chmod 666 /var/run/docker.sock'
                 sh 'docker build -t gzander7/csc324flaskapp:$VERSION .'
                 sh 'docker build -t gzander7/csc324flaskapp:latest .'
 
