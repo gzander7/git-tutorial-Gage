@@ -44,7 +44,7 @@ pipeline {
 
             steps {
 
-                sh 'docker build -t gzander7/csc324flaskapp:{latest} .'
+                sh 'docker build -t gzander7/csc324flaskapp:$VERSION .'
 
             }
 
